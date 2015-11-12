@@ -16,13 +16,19 @@ Basically, you're being scammed, I hope you didn't bet any money on this.
   + though not for you
 
 
-##Previes
+##Previews
 
 ###Navigation
-[Welcome screen](http://i.imgur.com/QdsXvoK.jpg)
+<br/>
 
-[Highscores](http://i.imgur.com/yfnXeDR.jpg)
+<a href='http://i.imgur.com/QdsXvoK.jpg'>
+<img src='http://i.imgur.com/QdsXvoK.jpg' width='30%' height='30%' style='transform: rotate(90deg); float:right'/>
+</a>
+<a href='http://i.imgur.com/yfnXeDR.jpg'>
+<img src='http://i.imgur.com/yfnXeDR.jpg' width='30%' height='30%' style='transform: rotate(90deg);'/>
+</a>
 
 ####Gameplay
-
-[In-game](http://i.imgur.com/a2mY8sp.jpg)
+<a href='http://i.imgur.com/a2mY8sp.jpg'>
+<img src='http://i.imgur.com/a2mY8sp.jpg' width='30%' height='30%' style='transform: rotate(90deg); float:right'/>
+</a>
