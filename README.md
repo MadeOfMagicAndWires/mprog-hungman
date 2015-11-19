@@ -18,17 +18,22 @@ Basically, you're being scammed, I hope you didn't bet any money on this.
 
 ##Previews
 
-###Navigation
+###Gameplay
 <br/>
 
-<a href='http://i.imgur.com/QdsXvoK.jpg'>
-<img src='http://i.imgur.com/QdsXvoK.jpg' width='30%' height='30%' style='transform: rotate(90deg); float:right'/>
-</a>
-<a href='http://i.imgur.com/yfnXeDR.jpg'>
-<img src='http://i.imgur.com/yfnXeDR.jpg' width='30%' height='30%' style='transform: rotate(90deg);'/>
+<a href='http://i.imgur.com/Q6A6ALv.jpg'>
+<img src='http://i.imgur.com/Q6A6ALv.jpg' width='30%' height='30%' style=' float:right'/>
 </a>
 
-####Gameplay
-<a href='http://i.imgur.com/a2mY8sp.jpg'>
-<img src='http://i.imgur.com/a2mY8sp.jpg' width='30%' height='30%' style='transform: rotate(90deg); float:right'/>
+###Settings
+<a href='http://imgur.com/bMIYLEp'>
+<img src='http://i.imgur.com/bMIYLEp.jpg' width='30%' height='30%' />
+</a>
+
+####Win Activities
+<a href='http://imgur.com/pTo2db3.jpg'>
+<img src='http://i.imgur.com/pTo2db3.jpg' width='30%' height='30%' style=' float:right'/>
+</a>
+<a href='http://imgur.com/yfnXeDR'>
+<img src='http://i.imgur.com/yfnXeDR.jpg' width='40%' height='40%' style="transform: rotate(90deg);"/>
 </a>
