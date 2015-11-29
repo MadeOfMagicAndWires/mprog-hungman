@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string-array name="words_small">
+	<item>BEAR</item>
+	<item>BOAR</item>
+	<item>DEER</item>
+	<item>DUCK</item>
+	<item>HARE</item>
+</string-array>
+</resources>
