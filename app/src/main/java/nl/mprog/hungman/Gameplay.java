@@ -32,11 +32,12 @@ public abstract class Gameplay {
     private StringBuilder correctSoFar;
     private boolean won;
 
+
     /**
      * Constructor class.
      * Gets the secret word, highscores, and guessedSoFar
      */
-    public void Gameplay(Context context) {
+    public Gameplay(Context context) {
 
 
     }
@@ -45,7 +46,7 @@ public abstract class Gameplay {
      * Constructor which sets the secret word to a specific word
      * @param word String to use as the word to be guessed
      */
-    public void Gameplay(Context context, String word){
+    public Gameplay(Context context, String word) {
 
     }
 
@@ -62,7 +63,7 @@ public abstract class Gameplay {
      * Fetches a random word from a database to use as the secret word
      */
     public String fetchWord() {
-        return new String();
+        return null;
     }
 
 
@@ -78,7 +79,7 @@ public abstract class Gameplay {
      * Fetches the highscores from different playsessions
      */
     public ArrayList<Integer> readHighscores(){
-        return new ArrayList<Integer>();
+        return null;
 
     }
 
@@ -132,7 +133,7 @@ public abstract class Gameplay {
     /**
      * Checks if the current score is  a new highscore
      */
-    public boolean checkHighscrores(){
+    public boolean checkHighscores(){
         return false;
     }
 
