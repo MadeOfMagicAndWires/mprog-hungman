@@ -17,12 +17,6 @@ import java.util.List;
 
 
 public class GameActivity extends HungmanActivity {
-    static public final List<Pair> DEFAULTCFG = Collections.unmodifiableList(
-            new ArrayList<Pair>() {{
-                add(Pair.create("wordlength", 7));
-                add(Pair.create("lives", 10));
-                add(Pair.create("good", true));
-            }});
 
     private Gameplay gameInstance;
 
@@ -63,11 +57,16 @@ public class GameActivity extends HungmanActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+                return true;
+            case R.id.action_quit:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
 
-        return super.onOptionsItemSelected(item);
     }
 
     public void initGameplay() {
