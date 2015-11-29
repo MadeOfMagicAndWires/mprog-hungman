@@ -22,7 +22,7 @@ public class NeutralGameplay implements GameplayInterface {
     private boolean good;
 
 
-    public void NeutralGameplay(Context context) {
+    public NeutralGameplay(Context context) {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
 
         this.good = settings.getBoolean("good", true);
@@ -54,12 +54,12 @@ public class NeutralGameplay implements GameplayInterface {
     /**
      * Reads the wordlist from the Resource R.values.wordlist
      */
-    public void readWordList() {
+    public void readWordList(String assetname) {
         if(good) {
-            goodGameInstance.readWordList();
+            goodGameInstance.readWordList(assetname);
         }
         else {
-            evilGameInstance.readWordList();
+            evilGameInstance.readWordList(assetname);
         }
 
     }
@@ -69,7 +69,7 @@ public class NeutralGameplay implements GameplayInterface {
      * Fetches the highscores from different playsessions
      */
     public ArrayList<Integer> readHighscores(){
-        return good ? goodGameInstance.readHighscores() : evilGameInstance.readHighscores();
+        return Gameplay.readHighscores();
     }
 
 
@@ -109,8 +109,8 @@ public class NeutralGameplay implements GameplayInterface {
     }
 
     /**
-     * Checks if the Charsequence contains any instnces of a specific letter
-     * @param letter
+     * Checks if the Charsequence contains any instances of a specific letter
+     * @param letter character to check against, must be a-Z
      * @return True or False, depending on whether the letter was found in the word
      */
     public boolean checkWord(Character letter){
@@ -147,13 +147,13 @@ public class NeutralGameplay implements GameplayInterface {
     /**
      * Checks if the current score is  a new highscore
      */
-    public boolean checkHighscrores(){
+    public boolean checkHighscores(){
         return good ? goodGameInstance.checkHighscores() : evilGameInstance.checkHighscores();
     }
 
     /**
      * Writes high score back to file.
-     * @return
+     * @return true if successful.
      */
     public boolean writeHighscores() {
         return good ? goodGameInstance.writeHighscores() : evilGameInstance.writeHighscores();

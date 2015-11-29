@@ -18,23 +18,23 @@ public interface GameplayInterface {
      * Reads settings from SharedPreferences file and translates them to "Gameplay" settings
      *
      */
-    public void readSettings();
+    void readSettings();
 
 
     /**
      * Fetches a random word from a database to use as the secret word
      */
-    public String fetchWord();
+    String fetchWord();
 
     /**
      * Reads the wordlist from the Resource R.values.wordlist
      */
-    public void readWordList();
+    void readWordList(String assetname);
 
     /**
      * Fetches the highscores from different playsessions
      */
-    public ArrayList<Integer> readHighscores();
+    ArrayList<Integer> readHighscores();
 
 
     /**
@@ -47,39 +47,39 @@ public interface GameplayInterface {
      * @see #changeScore(int)
      *
      */
-    public void guessLetter(Character letter);
+    void guessLetter(Character letter);
 
     /**
      * Updates the letters already guessed
      */
-    public void updateGuessedSoFar(Character letter);
+    void updateGuessedSoFar(Character letter);
 
     /**
      * Checks if the Charsequence contains any instnces of a specific letter
-     * @param letter
+     * @param letter letter to check against
      * @return True or False, depending on whether the letter was found in the word
      */
-    public boolean checkWord(Character letter);
+    boolean checkWord(Character letter);
 
     /**
      * Updates the letters that were correctly guessed so far
      */
-    public void updateCorrectSoFar(Character letter, int position);
+    void updateCorrectSoFar(Character letter, int position);
 
 
     /**
      * In- or decreases the score by a certain amount
      */
-    public void changeScore(int amount);
+    void changeScore(int amount);
 
     /**
      * Checks if the current score is  a new highscore
      */
-    public boolean checkHighscrores();
+    boolean checkHighscores();
 
     /**
      * Writes high score back to file.
-     * @return
+     * @return true if sucessful
      */
-    public boolean writeHighscores();
+    boolean writeHighscores();
 }

@@ -19,12 +19,9 @@ import java.util.List;
  * Basic Activity
  */
 public class HungmanActivity extends AppCompatActivity {
-
-
-
     static public final List<Pair> DEFAULTCFG = Collections.unmodifiableList(
             new ArrayList<Pair>() {{
-                add(Pair.create("wordlength", 7));
+                add(Pair.create("wordMaxLength", 7));
                 add(Pair.create("lives", 10));
                 add(Pair.create("good", true));
             }});
