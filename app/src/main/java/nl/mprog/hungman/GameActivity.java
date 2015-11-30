@@ -1,5 +1,6 @@
 package nl.mprog.hungman;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -23,6 +24,7 @@ public class GameActivity extends HungmanActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_game);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -36,9 +38,10 @@ public class GameActivity extends HungmanActivity {
             }
         });
 
+
         readSettings();
         initGameplay();
-
+        gameInstance.fetchWord();
 
     }
 
@@ -59,7 +62,8 @@ public class GameActivity extends HungmanActivity {
         //noinspection SimplifiableIfStatement
         switch (id) {
             case R.id.action_settings:
-                return true;
+                Intent openSettings = new Intent(this, SettingsActivity.class);
+                startActivity(openSettings);
             case R.id.action_quit:
                 finish();
                 return true;

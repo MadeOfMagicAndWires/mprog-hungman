@@ -2,12 +2,20 @@ package nl.mprog.hungman;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.nfc.Tag;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Pair;
+import android.util.TimingLogger;
 import android.util.Xml;
 import android.widget.ArrayAdapter;
 
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -20,6 +28,11 @@ import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.TimerTask;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 /**
  *
@@ -39,6 +52,7 @@ public abstract class Gameplay {
     private Context   context;
     private ArrayList<String> wordList;
     private int    wordMaxLength;
+    private int    longestWord;
     private String       word;
     private int         turns;
     private int         lives;
@@ -58,12 +72,20 @@ public abstract class Gameplay {
         this.context = context;
         this.turns = 1;
         this.score = 100;
+        this.wordList = new ArrayList<>();
 
         //init methods
         readSettings();
-        readWordList(WORDLISTFILE);
+
+        //get word
         this.word = fetchWord();
-        Log.v("secret word", this.word);
+        Log.d("secret word", this.word);
+
+        //set blindword
+        initCorrectSoFar();
+        Log.d("Blindword", correctSoFar.toString());
+
+
     }
 
     /**
@@ -71,8 +93,14 @@ public abstract class Gameplay {
      * @param word String to use as the word to be guessed
      */
     public Gameplay(Context context, String word) {
+        this.context = context;
+        this.turns = 1;
+        this.score = 100;
+        this.word = word;
+        Log.d("Secret word", this.word);
 
     }
+
 
     /**
      * Reads settings from SharedPreferences file and translates them to "Gameplay" settings
@@ -82,6 +110,7 @@ public abstract class Gameplay {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
         this.wordMaxLength = settings.getInt("wordMaxLength", 7);
         this.lives = settings.getInt("lives", 10);
+        this.longestWord = settings.getInt("longestWord", 0);
     }
 
 
@@ -89,6 +118,9 @@ public abstract class Gameplay {
      * Fetches a random word from a database to use as the secret word
      */
     public String fetchWord() {
+        if(this.wordList.isEmpty()){
+            readWordList(WORDLISTFILE);
+        }
 
         //get random word
         Random rando = new Random();
@@ -101,13 +133,103 @@ public abstract class Gameplay {
 
     }
 
+    public void readWordList(String assetname) {
+        this.wordList.clear();
+        setLongestWord(0);
+
+        TimingLogger timers = new TimingLogger("Hungman", "readWordList");
+        try{
+            //initiate file stream
+            InputStream wordStream = context.getAssets().open(assetname);
+
+            //Initiate wordbuffer
+            final StringBuilder builder = new StringBuilder();
+
+            //initiate the parser, with custom handler WordListHandler
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser parser = factory.newSAXParser();
+            XMLReader saxReader = parser.getXMLReader();
+
+            //Initiate the XMLReader Handler
+            DefaultHandler wordListHandler = new DefaultHandler(){
+                boolean parsing = false;
+
+                @Override
+                public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+                    if (localName.equals("item")) {
+                        parsing = true;
+                    }
+                }
+
+                @Override
+                public void characters(char[] chars, int i, int i1) throws SAXException {
+                    if (parsing) {
+                        builder.append(new String(chars, i, i1));
+                    }
+                }
+
+                @Override
+                public void endElement(String uri, String localName, String qName) throws SAXException {
+                    if (localName.equals("item")) {
+
+                        if(builder.length() > longestWord){
+                            setLongestWord(builder.length());
+                        }
+
+                        if (builder.length() <= wordMaxLength) {
+                            wordList.add(builder.toString());
+                            //Log.d("Added word", builder.toString());
+                        }
+
+                        builder.setLength(0);
+                        parsing = false;
+                    }
+                }
+
+            };
+
+            //set handler and parse document
+            saxReader.setContentHandler(wordListHandler);
+            saxReader.setErrorHandler(wordListHandler);
+            saxReader.parse(new InputSource(wordStream));
+            timers.addSplit("parsing xml");
+            timers.dumpToLog();
+
+            //Check length
+            Log.d("SAX list length", String.valueOf(wordList.size()));
+            Log.d("SAX longest word", String.valueOf(longestWord));
+
+        }
+        catch (SAXException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     /**
+     * Sets the number for the longest word counter.
+     * @param counter longest word so far
+     */
+    public void setLongestWord(int counter) {
+        this.longestWord = counter;
+    }
+
+
+    /**
+     * @deprecated 30-11-15
      * Reads the wordlist from a file
      * @param assetname filename to read
      */
-    public void readWordList (String assetname) {
-        wordList = new ArrayList<>();
+    public void readWordListPull (String assetname) {
+        wordList.clear();
+        setLongestWord(0);
+        int wordcount = 0;
+
         try {
             //initiate xml parser
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
@@ -119,7 +241,6 @@ public abstract class Gameplay {
             parser.setInput(wordStream, "UTF-8");
 
             int event = parser.getEventType();
-            int longestWord = 0;
 
             while(event != XmlPullParser.END_DOCUMENT) {
                 switch (event) {
@@ -132,12 +253,13 @@ public abstract class Gameplay {
                         int currWordLength = currentWord.length();
 
                         if(currWordLength > longestWord) {
-                            longestWord = currWordLength;
+                            setLongestWord(currWordLength);
                         }
 
                         if(currWordLength <= wordMaxLength) {
+                            wordcount++;
                             wordList.add(currentWord);
-                            Log.d("new word", currentWord);
+                            //Log.d("new word", currentWord);
                         }
 
                         break;
@@ -149,7 +271,16 @@ public abstract class Gameplay {
                 event = parser.next();
             }
 
-            Log.d("Longest word in wordlist", String.valueOf(longestWord));
+            //Check list and longest word
+            Log.d("XmlPull List length", String.valueOf(wordList.size()));
+            Log.d("XmlPull Counter length", String.valueOf(wordcount));
+            Log.d("Longest word in list", String.valueOf(longestWord));
+
+            // Needed this to check what was wrong with xmlPullParser
+            // it adds more (empty?) items to the ArrayList than necessary ??
+            //for(int i=0;i<wordList.size();i++) {
+            //    Log.d("Word "+i, wordList.get(i));
+            //}
 
         } catch (XmlPullParserException e) {
             e.printStackTrace();
@@ -157,7 +288,13 @@ public abstract class Gameplay {
             e.printStackTrace();
         }
 
+    }
 
+    public void initCorrectSoFar(){
+        this.correctSoFar = new StringBuilder(word.length());
+        for(int i=0;i<word.length();i++){
+            correctSoFar.append("_");
+        }
     }
 
 
@@ -178,14 +315,26 @@ public abstract class Gameplay {
      *
      */
     public void guessLetter(Character letter){
+        updateGuessedSoFar(letter);
+        if(checkWord(letter)){
+            for(int i=0;i<word.length();i++) {
+                if(word.charAt(i) == letter){
+                    updateCorrectSoFar(letter,i);
+                }
+            }
 
+        }
+        else {
+            lives -= 1;
+            score -= 10;
+        }
     }
 
     /**
      * Updates the letters already guessed
      */
     public void updateGuessedSoFar(Character letter){
-
+        guessedSoFar.append(letter);
     }
 
     /**
@@ -194,7 +343,7 @@ public abstract class Gameplay {
      * @return True or False, depending on whether the letter was found in the word
      */
     public boolean checkWord(Character letter){
-        return false;
+        return word.contains(String.valueOf(letter));
     }
 
 
@@ -202,16 +351,19 @@ public abstract class Gameplay {
      * Updates the letters that were correctly guessed so far
      */
     public void updateCorrectSoFar(Character letter, int position){
+        correctSoFar.replace(position,position, String.valueOf(letter));
 
     }
-
 
     /**
      * In- or decreases the score by a certain amount
      */
     public void changeScore(int amount) {
-
+        score += amount;
     }
+
+    public boolean gameOver(){return false;}
+
 
     /**
      * Checks if the current score is  a new highscore
