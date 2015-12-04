@@ -1,6 +1,8 @@
 package nl.mprog.hungman;
 
+import android.annotation.TargetApi;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -10,6 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,16 +30,21 @@ public class HungmanActivity extends AppCompatActivity {
                 add(Pair.create("good", true));
             }});
 
+    public enum EditMode {
+        NONE,
+        ADDSPACING,
+    }
+
     protected SharedPreferences settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        readSettings();
+        initSettings();
 
     }
 
-    public void readSettings() {
+    public void initSettings() {
 
         //Haal de app settings op
         settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -64,6 +73,75 @@ public class HungmanActivity extends AppCompatActivity {
             settingsEditor.commit();
             Log.v("readSettings", "Default settings aangemaakt");
         }
+
+    }
+
+    /**
+     * update the text of any View that has a text attribute
+     * @param ViewId int containing the id of target view, can be R.id.view
+     * @param text text to put in View.
+     * @param EditMode; EditMode.ADDSPACING or NONE if nothing should be edited.
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void updateTextView(int ViewId, String text, EditMode EditMode) {
+        TextView tv = (TextView) findViewById(ViewId);
+        if (EditMode == HungmanActivity.EditMode.ADDSPACING
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
+            tv.setLetterSpacing(1);
+        } else if (EditMode == HungmanActivity.EditMode.ADDSPACING) {
+            text = addSpacing(text);
+        }
+
+        tv.setText(text);
+    }
+
+    /**
+     * update the text of any View that has a text attribute
+     * @param tv int containing the id of target view, can be R.id.view
+     * @param text text to put in View.
+     * @param EditMode; EditMode.ADDSPACING or NONE if nothing should be edited.
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void updateTextView(TextView tv, String text, EditMode EditMode) {
+        if (EditMode == HungmanActivity.EditMode.ADDSPACING
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            tv.setLetterSpacing(1);
+        } else if (EditMode == HungmanActivity.EditMode.ADDSPACING) {
+            text = addSpacing(text);
+        }
+
+        tv.setText(text);
+    }
+
+    /**
+     * update the text of any View that has a text attribute
+     * @param et int containing the id of target view, can be R.id.view
+     * @param text text to put in View.
+     * @param EditMode; EditMode.ADDSPACING or NONE if nothing should be edited.
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void updateTextView(EditText et, String text, EditMode EditMode) {
+        if (EditMode == HungmanActivity.EditMode.ADDSPACING
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            et.setLetterSpacing(1);
+        } else if (EditMode == HungmanActivity.EditMode.ADDSPACING) {
+            text = addSpacing(text);
+        }
+
+        et.setText(text);
+    }
+
+    public String addSpacing(String notSpaced) {
+        //LetterSpacing doesn't work below API Level 21, so we insert spaces instead.
+        StringBuilder wordWithSpacing = new StringBuilder();
+        for (int i = 0; i < notSpaced.length(); i++) {
+            char current = notSpaced.charAt(i);
+            wordWithSpacing.append(current);
+            wordWithSpacing.append(' ');
+        }
+
+        return wordWithSpacing.toString();
 
     }
 

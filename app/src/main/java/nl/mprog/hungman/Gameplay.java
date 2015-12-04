@@ -49,18 +49,18 @@ public abstract class Gameplay {
     static public final String WORDLISTFILE  = "words.xml";
     static public final String WORDSMALLFILE = "small.xml";
 
-    private Context   context;
+    protected Context   context;
     private ArrayList<String> wordList;
     private int    wordMaxLength;
     private int    longestWord;
-    private String       word;
+    protected String       word;
     private int         turns;
     private int         lives;
     private int         score;
     private ArrayList<Pair> highscores;
-    private CharBuffer guessedSoFar;
+    private StringBuilder guessedSoFar;
     private StringBuilder correctSoFar;
-    private boolean won;
+    protected boolean gameWon;
 
 
     /**
@@ -73,6 +73,7 @@ public abstract class Gameplay {
         this.turns = 1;
         this.score = 100;
         this.wordList = new ArrayList<>();
+        this.guessedSoFar = new StringBuilder();
 
         //init methods
         readSettings();
@@ -82,7 +83,7 @@ public abstract class Gameplay {
         Log.d("secret word", this.word);
 
         //set blindword
-        initCorrectSoFar();
+        initBlindWord();
         Log.d("Blindword", correctSoFar.toString());
 
 
@@ -119,7 +120,7 @@ public abstract class Gameplay {
      */
     public String fetchWord() {
         if(this.wordList.isEmpty()){
-            readWordList(WORDLISTFILE);
+            readWordList(WORDSMALLFILE);
         }
 
         //get random word
@@ -204,8 +205,10 @@ public abstract class Gameplay {
             e.printStackTrace();
         }
         catch (IOException e) {
+            //catch IOException
             e.printStackTrace();
         } catch (ParserConfigurationException e) {
+            //catch ParserConfigurationException
             e.printStackTrace();
         }
 
@@ -290,12 +293,22 @@ public abstract class Gameplay {
 
     }
 
-    public void initCorrectSoFar(){
+    /**
+     * Sets up the blindword (showing letters correctly guessed so far)
+     * to be as long as the secret word and be filled with underscores
+     * before any letters have been guessed.
+     */
+    public void initBlindWord(){
         this.correctSoFar = new StringBuilder(word.length());
         for(int i=0;i<word.length();i++){
             correctSoFar.append("_");
         }
     }
+
+    /**
+     * Returns the blindword (showing letters correctly guessed so far) as a String
+     */
+    public String getBlindWord() {return correctSoFar.toString();}
 
 
     /**
@@ -314,28 +327,31 @@ public abstract class Gameplay {
      * @see #changeScore(int)
      *
      */
-    public void guessLetter(Character letter){
-        updateGuessedSoFar(letter);
-        if(checkWord(letter)){
-            for(int i=0;i<word.length();i++) {
-                if(word.charAt(i) == letter){
-                    updateCorrectSoFar(letter,i);
-                }
-            }
-
-        }
-        else {
-            lives -= 1;
-            score -= 10;
-        }
-    }
+    public boolean guessLetter(Character letter){return false;}
 
     /**
      * Updates the letters already guessed
+     * @return true if letter hasn't already been added, false if already guessed.
      */
-    public void updateGuessedSoFar(Character letter){
-        guessedSoFar.append(letter);
+    public boolean updateGuessedSoFar(Character letter) {
+
+        //if letter hasn't already been guessed, add letter, return true
+        if(!guessedSoFar.toString().contains(letter.toString())) {
+            guessedSoFar.append(letter);
+            //Log.d("Guessed so far", guessedSoFar.toString());
+            return true;
+        }
+        else{
+            //Log.d("Guessed so far", guessedSoFar.toString());
+            return false;
+        }
+
+
     }
+
+    public String getGuessedSoFar() {return guessedSoFar.toString();}
+
+
 
     /**
      * Checks if the Charsequence contains any instnces of a specific letter
@@ -351,9 +367,9 @@ public abstract class Gameplay {
      * Updates the letters that were correctly guessed so far
      */
     public void updateCorrectSoFar(Character letter, int position){
-        correctSoFar.replace(position,position, String.valueOf(letter));
-
+        correctSoFar.setCharAt(position,letter);
     }
+
 
     /**
      * In- or decreases the score by a certain amount
@@ -362,7 +378,36 @@ public abstract class Gameplay {
         score += amount;
     }
 
-    public boolean gameOver(){return false;}
+    /**
+     * In- or decreases the lives by a certain amount
+     * @param amount integer
+     */
+    public void changeLives(int amount) {
+        lives += amount;
+    }
+
+    /**
+     * Return the amounts of lives left.
+     * @return lives as int.
+     */
+    public int getLives(){return lives;}
+
+    /**
+     * Checks game conditions. if game is won it'll flip this.won
+     * @return True if game is over, false if not yet
+     */
+    public boolean gameOver(){
+        if(this.lives == 0){
+            return true;
+        }
+
+        else if(correctSoFar.toString().matches(word)){
+            this.gameWon = true;
+            return true;
+        }
+
+        else {return false;}
+    }
 
 
     /**

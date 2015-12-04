@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">hungman</string>
+    <string name="app_name">Hungman</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_settings">Settings</string>
 
@@ -63,4 +63,9 @@
     <string name="title_activity_hangman">HangmanActivity</string>
     <string name="quitapp">Quit App</string>
     <string name="loading_text">Loading...</string>
+    <string name="noletterinput">Please insert a letter</string>
+    <string name="inputnotletter">Please insert alphabetic input only</string>
+    <string name="guessed_so_far_header">Letters guessed:</string>
+    <string name="game_won">You won!</string>
+    <string name="action_newgame">New Game</string>
 </resources>

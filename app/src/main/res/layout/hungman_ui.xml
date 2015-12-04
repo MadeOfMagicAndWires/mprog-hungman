@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_weight="10"
+    android:layout_marginTop="50dp"
+    android:id="@+id/hungman_ui"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent">
+
+    <include layout="@layout/healthbar" />
+
+
+    <TextView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:textSize="50sp"
+        android:text="Loading..."
+        android:layout_gravity="center|center_horizontal"
+        android:id="@+id/blindword"
+        android:editable="true"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="50dp"
+        />
+
+    <include layout="@layout/guessed_letters"/>
+
+
+    <EditText xmlns:android="http://schemas.android.com/apk/res/android"
+        android:inputType="textCapCharacters"
+        android:hint="Guess a letter"
+        android:id="@+id/submit_letter"
+        android:minWidth="100dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:imeOptions="actionSearch"
+        android:capitalize="characters"
+        android:layout_gravity="bottom|center_horizontal"
+        android:gravity="center_horizontal|bottom"
+        android:maxLength="1"
+        />
+
+</LinearLayout>
