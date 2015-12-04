@@ -1,22 +1,16 @@
 package nl.mprog.hungman;
 
-import android.annotation.TargetApi;
+
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -95,9 +89,9 @@ public class GameActivity extends HungmanActivity{
     }
 
     public void initGameplay() {
-        boolean good = settings.getBoolean("good", true);
+        boolean evil = settings.getBoolean("evil", true);
 
-        if (good) {
+        if (!evil) {
             gameInstance = new GoodGameplay(this);
         } else {
             gameInstance = new EvilGameplay(this);
@@ -141,7 +135,7 @@ public class GameActivity extends HungmanActivity{
 
         //if input is empty, notify user
         //can't use .isempty because of shitty minimum SDK.
-        if (letterView.getText().toString() == "") {
+        if (letterView.getText().toString().matches("")) {
             Snackbar.make(letterView, R.string.noletterinput, Snackbar.LENGTH_SHORT).show();
             Log.d("InputError", "Input is empty");
             return false;

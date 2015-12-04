@@ -27,7 +27,7 @@ public class HungmanActivity extends AppCompatActivity {
             new ArrayList<Pair>() {{
                 add(Pair.create("wordMaxLength", 7));
                 add(Pair.create("lives", 10));
-                add(Pair.create("good", true));
+                add(Pair.create("evil", true));
             }});
 
     public enum EditMode {
@@ -51,7 +51,8 @@ public class HungmanActivity extends AppCompatActivity {
 
         //Check of settings leeg is (heeft geen setting die er sowieso in moet zitten)
         //Zo niet, voeg dan alle standaard settings in DEFAULTCFG toe.
-        if(!settings.contains("wordlength")) {
+        String firstsetting = (String) DEFAULTCFG.get(0).first;
+        if(!settings.contains(firstsetting)) {
             //maak editor aan
             SharedPreferences.Editor settingsEditor = settings.edit();
             //Ga alle default settings in DEFAULTCFG af, en voeg ze toe.
