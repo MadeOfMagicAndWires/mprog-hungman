@@ -1,0 +1,20 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
+         dismiss it. -->
+    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+    <PreferenceCategory android:title="Difficulty Settings">
+        <ListPreference
+            android:key="wordMaxLength"
+            android:title="Word Length"
+            android:defaultValue="5"
+            android:summary="maximum length of word you'll have to guess"/>
+
+        <ListPreference
+            android:key="lives"
+            android:title="Lives"
+            android:defaultValue="10"
+            android:summary="Amount of guesses you'll start with" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
