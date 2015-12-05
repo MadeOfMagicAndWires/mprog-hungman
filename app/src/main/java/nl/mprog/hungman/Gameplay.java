@@ -41,6 +41,8 @@ import javax.xml.parsers.SAXParserFactory;
  * a game of hangman.
  * It doesn't implement any specific gamemode or interaction with the user.
  *
+ * @author Joost Bremmer
+ * @since 1.0
  */
 
 public abstract class Gameplay {
@@ -50,10 +52,10 @@ public abstract class Gameplay {
     static public final String WORDSMALLFILE = "small.xml";
 
     protected Context   context;
-    private ArrayList<String> wordList;
-    private int    wordMaxLength;
-    private int    longestWord;
-    protected String       word;
+    protected ArrayList<String> wordList;
+    private int wordMaxLength;
+    private int   longestWord;
+    protected String     word;
     private int         turns;
     private int         lives;
     private int         score;
@@ -81,9 +83,6 @@ public abstract class Gameplay {
         //get word
         this.word = fetchWord();
         Log.d("secret word", this.word);
-
-        //set blindword
-        initBlindWord();
         Log.d("Blindword", correctSoFar.toString());
 
 
@@ -119,21 +118,38 @@ public abstract class Gameplay {
      * Fetches a random word from a database to use as the secret word
      */
     public String fetchWord() {
-        if(this.wordList.isEmpty()){
+        if (this.wordList.isEmpty()) {
             readWordList(WORDSMALLFILE);
         }
 
-        //get random word
-        Random rando = new Random();
-        String randoWord = wordList.get(rando.nextInt(wordList.size()));
+        String secretword;
 
-        //return randoWord once it is not the same as current word
-        if(!randoWord.equals(word)) {
-            return randoWord;
-        } else { return fetchWord(); }
+        //Log.d("fetchword", String.valueOf(wordList.size()));
+        if (wordList.size() == 1) {
+            //Log.d("fetchword", "Only one word in list");
+            secretword =  wordList.get(0);
+        } else {
+
+            //get random word
+            Random rando = new Random();
+            secretword = wordList.get(rando.nextInt(wordList.size()));
+
+            //return randoWord once it is not the same as current word
+            if (secretword.equals(this.word)) {
+                secretword = fetchWord();
+            }
+        }
+
+        initBlindWord(secretword);
+
+        return secretword;
 
     }
 
+    /**
+     * Parse wordlist from an XML file using SAX XMLReader.
+     * @param assetname path to the xml file in the assets folder.
+     */
     public void readWordList(String assetname) {
         this.wordList.clear();
         setLongestWord(0);
@@ -156,7 +172,8 @@ public abstract class Gameplay {
                 boolean parsing = false;
 
                 @Override
-                public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+                public void startElement(String uri, String localName, String qName,
+                                         Attributes attributes) throws SAXException {
                     if (localName.equals("item")) {
                         parsing = true;
                     }
@@ -170,7 +187,8 @@ public abstract class Gameplay {
                 }
 
                 @Override
-                public void endElement(String uri, String localName, String qName) throws SAXException {
+                public void endElement(String uri, String localName, String qName)
+                        throws SAXException {
                     if (localName.equals("item")) {
 
                         if(builder.length() > longestWord){
@@ -224,8 +242,11 @@ public abstract class Gameplay {
 
 
     /**
-     * @deprecated 30-11-15
-     * Reads the wordlist from a file
+     * @deprecated since 30-11-15, SAX is supposedly quicker,
+     *             and resulting arraylist is reported as being twice as long as it should be.
+     * @see #readWordList(String)
+     *
+     * Parses the wordlist from an XML file using the XmlPullParser
      * @param assetname filename to read
      */
     public void readWordListPull (String assetname) {
@@ -298,9 +319,9 @@ public abstract class Gameplay {
      * to be as long as the secret word and be filled with underscores
      * before any letters have been guessed.
      */
-    public void initBlindWord(){
-        this.correctSoFar = new StringBuilder(word.length());
-        for(int i=0;i<word.length();i++){
+    public void initBlindWord(String secretWord){
+        this.correctSoFar = new StringBuilder(secretWord.length());
+        for(int i=0;i<secretWord.length();i++){
             correctSoFar.append("_");
         }
     }
@@ -323,7 +344,7 @@ public abstract class Gameplay {
      * @param letter Character, alphabetic to check against the secret word
      * @see #checkWord(Character)
      * @see #updateGuessedSoFar(Character)
-     * @see #updateCorrectSoFar(Character, int)
+     * @see #updateCorrectSoFar(Character)
      * @see #changeScore(int)
      *
      */
@@ -349,6 +370,9 @@ public abstract class Gameplay {
 
     }
 
+    /**
+     * returns the letters already guessed as a string.
+     */
     public String getGuessedSoFar() {return guessedSoFar.toString();}
 
 
@@ -366,13 +390,19 @@ public abstract class Gameplay {
     /**
      * Updates the letters that were correctly guessed so far
      */
-    public void updateCorrectSoFar(Character letter, int position){
-        correctSoFar.setCharAt(position,letter);
+    public void updateCorrectSoFar(Character letter){
+
+        for(int i=0;i<this.word.length();i++) {
+            if(this.word.charAt(i) == letter){
+                correctSoFar.setCharAt(i,letter);
+            }
+        }
     }
 
 
     /**
      * In- or decreases the score by a certain amount
+     * @param amount integer, can be negative to decrease the score.
      */
     public void changeScore(int amount) {
         score += amount;
@@ -380,7 +410,7 @@ public abstract class Gameplay {
 
     /**
      * In- or decreases the lives by a certain amount
-     * @param amount integer
+     * @param amount integer, can be negative to decrease the lives left.
      */
     public void changeLives(int amount) {
         lives += amount;
@@ -411,17 +441,30 @@ public abstract class Gameplay {
 
 
     /**
-     * Checks if the current score is  a new highscore
+     * Checks if a score is a new highscore
+     * @param newscore score to check against the current highscores
+     * @return true if score is a new highscore, false if not.
      */
-    public boolean checkHighscores(){
+    public boolean checkHighscores(int newscore){
         return false;
     }
 
     /**
-     * Writes high score back to file.
+     * Writes highscores back to file.
      * @return true if successful
      */
     public boolean writeHighscores() {
         return false;
     }
+
+    /**
+     * increase the turn timer by 1.
+     */
+    public void increaseTurnTimer(){this.turns++;}
+
+    /**
+     * Return the amount of turns played so far.
+     */
+    public int getTurns(){return this.turns;}
+
 }

@@ -7,9 +7,13 @@ import java.nio.CharBuffer;
 import java.util.ArrayList;
 
 /**
- * @deprecated 29-11-15
+ * @deprecated since 29-11-15, rendered unnecessary.
+ * @see GameActivity#initGameplay()
+ *
  * Gameplay interface used by NeutralGameplay
  *
+ * @author Joost Bremmer
+ * @since  0.5
  */
 
 public interface GameplayInterface {
@@ -43,7 +47,7 @@ public interface GameplayInterface {
      * @param letter Character, alphabetic to check against the secret word
      * @see #checkWord(Character)
      * @see #updateGuessedSoFar(Character)
-     * @see #updateCorrectSoFar(Character, int)
+     * @see #updateCorrectSoFar(Character)
      * @see #changeScore(int)
      *
      */
@@ -64,7 +68,7 @@ public interface GameplayInterface {
     /**
      * Updates the letters that were correctly guessed so far
      */
-    void updateCorrectSoFar(Character letter, int position);
+    void updateCorrectSoFar(Character letter);
 
 
     /**
@@ -75,7 +79,7 @@ public interface GameplayInterface {
     /**
      * Checks if the current score is  a new highscore
      */
-    boolean checkHighscores();
+    boolean checkHighscores(int newscore);
 
     /**
      * Writes high score back to file.

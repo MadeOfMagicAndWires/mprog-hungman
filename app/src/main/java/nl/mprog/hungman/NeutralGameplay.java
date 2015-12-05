@@ -7,11 +7,17 @@ import android.preference.PreferenceManager;
 import java.util.ArrayList;
 
 /**
- * @deprecated 29-11-15
+ * @deprecated since 29-11-15.
+ *             Proved Completely unecessary, as Java apparently doesn't recast subclasses.
+ * @see GameActivity#initGameplay()
+ *
  * NeutralGamplay is used as a bridge between GameActivity and Gameplay classes
  * Since GameActivity initially doesn't know which Gameplay class to use it will create
  * a NeutralGameplay object, which will patch any command through
  * to whichever Gameplay instance is needed.
+ *
+ * @author Joost Bremmer
+ * @since  0.5
  */
 
 public class NeutralGameplay implements GameplayInterface {
@@ -79,7 +85,7 @@ public class NeutralGameplay implements GameplayInterface {
      * @param letter Character, alphabetic to check against the secret word
      * @see #checkWord(Character)
      * @see #updateGuessedSoFar(Character)
-     * @see #updateCorrectSoFar(Character, int)
+     * @see #updateCorrectSoFar(Character)
      * @see #changeScore(int)
      *
      */
@@ -121,12 +127,12 @@ public class NeutralGameplay implements GameplayInterface {
     /**
      * Updates the letters that were correctly guessed so far
      */
-    public void updateCorrectSoFar(Character letter, int position){
+    public void updateCorrectSoFar(Character letter){
         if(good) {
-            goodGameInstance.updateCorrectSoFar(letter, position);
+            goodGameInstance.updateCorrectSoFar(letter);
         }
         else {
-            evilGameInstance.updateCorrectSoFar(letter, position);
+            evilGameInstance.updateCorrectSoFar(letter);
         }
     }
 
@@ -147,8 +153,9 @@ public class NeutralGameplay implements GameplayInterface {
     /**
      * Checks if the current score is  a new highscore
      */
-    public boolean checkHighscores(){
-        return good ? goodGameInstance.checkHighscores() : evilGameInstance.checkHighscores();
+    public boolean checkHighscores(int newscore){
+        return good ? goodGameInstance.checkHighscores(newscore)
+                : evilGameInstance.checkHighscores(newscore);
     }
 
     /**

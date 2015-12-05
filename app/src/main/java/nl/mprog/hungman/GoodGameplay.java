@@ -1,37 +1,38 @@
 package nl.mprog.hungman;
 
 import android.content.Context;
-import android.util.Log;
-import android.util.Pair;
-
-import java.nio.CharBuffer;
-import java.util.ArrayList;
 
 /**
- * Subclass of Gameplay implementing the good (standard) version of Hangman.
+ * Subclass of Gameplay implementing playing the good (standard) version of Hangman.
+ *
+ * @author Joost Bremmer
+ * @since  1.0
  */
 public class GoodGameplay extends Gameplay {
 
 
-
+    /**
+     * {@inheritDoc}
+     */
     public GoodGameplay(Context context) {
         super(context);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean guessLetter(Character letter) {
-
         boolean guessWasCorrect;
+
+        //update the guessed letters
         updateGuessedSoFar(letter);
 
+        //check if letter is in word
+        // if not lower lives and score
         if(checkWord(letter)){
-            for(int i=0;i<this.word.length();i++) {
-                if(this.word.charAt(i) == letter){
-                    updateCorrectSoFar(letter,i);
-                }
-            }
+            updateCorrectSoFar(letter);
             guessWasCorrect = true;
-
         }
         else {
             changeLives(-1);
@@ -39,16 +40,8 @@ public class GoodGameplay extends Gameplay {
             guessWasCorrect = false;
         }
 
-        if(gameOver()) {
-            if(gameWon) {
-                Log.v("Congratulations", context.getString(R.string.game_won));
-            }
-            else {
-                Log.v("Congratulations", "You lost!");
-            }
-
-        }
-
+        //increase turns
+        increaseTurnTimer();
         return guessWasCorrect;
 
     }

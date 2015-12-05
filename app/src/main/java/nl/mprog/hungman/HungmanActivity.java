@@ -20,7 +20,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Basic Activity
+ * Hungman Activity superclass
+ * implements methods to easily read and check SharedPreference settings
+ * and update the text for various Views containing Text.
+ *
+ * @author Joost Bremmer
+ * @since  1.0
+ *
  */
 public class HungmanActivity extends AppCompatActivity {
     static public final List<Pair> DEFAULTCFG = Collections.unmodifiableList(

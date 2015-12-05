@@ -15,6 +15,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 
+/**
+ * GameActivity class
+ * Used to interact between the iser and the Gamepay instance.
+ *
+ * @author Joost Bremmer
+ * @since 1.0
+ */
+
 
 public class GameActivity extends HungmanActivity{
 
@@ -46,11 +54,16 @@ public class GameActivity extends HungmanActivity{
 
         EditText get = (EditText) findViewById(R.id.submit_letter);
         get.setOnEditorActionListener(editTextListener);
+    }
 
+    @Override
+    public void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
 
         initGameplay();
         gameInstance.fetchWord();
         updateUi();
+
     }
 
     @Override
@@ -97,7 +110,7 @@ public class GameActivity extends HungmanActivity{
             gameInstance = new EvilGameplay(this);
         }
 
-        Log.v("gameplay instance is", gameInstance.getClass().getName());
+        Log.d("gameplay instance is", gameInstance.getClass().getName());
     }
 
 
@@ -120,7 +133,7 @@ public class GameActivity extends HungmanActivity{
         }
 
 
-        updateTextView(R.id.healthbar, healthbar.toString(),EditMode.NONE);
+        updateTextView(R.id.healthbar, healthbar.toString(), EditMode.NONE);
 
     }
 
@@ -131,13 +144,12 @@ public class GameActivity extends HungmanActivity{
         char letter = 0;
         boolean correct = false;
 
-        Log.v("Input:", letterView.getText().toString());
+        //Log.d("Input", letterView.getText().toString());
 
-        //if input is empty, notify user
+        //if input is empty, log it silently.
         //can't use .isempty because of shitty minimum SDK.
         if (letterView.getText().toString().matches("")) {
-            Snackbar.make(letterView, R.string.noletterinput, Snackbar.LENGTH_SHORT).show();
-            Log.d("InputError", "Input is empty");
+            Log.w("guessLetterListener", "Received empty input");
             return false;
         }
         else {
@@ -160,14 +172,27 @@ public class GameActivity extends HungmanActivity{
         // Check if character is alphabetic, if yes, fire guessLetter(), if not silently ignore.
         if (Character.isLetter(letter)) {
             correct = gameInstance.guessLetter(letter);
-            Log.d("guess Correct?", String.valueOf(correct));
+            //Log.d("guess Correct?", String.valueOf(correct));
             updateUi();
 
         }
 
 
         letterView.getText().clear();
+        gameOverListener();
         return correct;
+    }
+
+    public void gameOverListener() {
+        if(gameInstance.gameOver()) {
+            if(gameInstance.gameWon) {
+                Log.v("Congratulations", getString(R.string.game_won));
+            }
+            else {
+                Log.v("Congratulations", "You lost!");
+            }
+
+        }
     }
 
 
