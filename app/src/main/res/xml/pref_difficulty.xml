@@ -4,13 +4,13 @@
          dismiss it. -->
     <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
     <PreferenceCategory android:title="Difficulty Settings">
-        <ListPreference
+        <SeekBarPreference
             android:key="wordMaxLength"
             android:title="Word Length"
             android:defaultValue="5"
             android:summary="maximum length of word you'll have to guess"/>
 
-        <ListPreference
+        <SeekBarPreference
             android:key="lives"
             android:title="Lives"
             android:defaultValue="10"
