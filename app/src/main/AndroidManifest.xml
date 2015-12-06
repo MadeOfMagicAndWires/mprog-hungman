@@ -20,7 +20,15 @@
         </activity>
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings" />
+        <activity
+            android:name=".WinActivity"
+            android:label="@string/title_activity_win"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".HighScoreActivity"
+            android:label="@string/title_activity_high_score"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
