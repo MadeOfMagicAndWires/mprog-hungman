@@ -1,10 +1,12 @@
-package nl.mprog.hungman;
+package nl.mprog.hungman.model;
 
 import android.content.Context;
 import android.util.Pair;
 
 import java.nio.CharBuffer;
 import java.util.ArrayList;
+
+import nl.mprog.hungman.GameActivity;
 
 /**
  * @deprecated since 29-11-15, rendered unnecessary.

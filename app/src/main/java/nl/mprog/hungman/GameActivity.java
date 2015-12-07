@@ -3,10 +3,7 @@ package nl.mprog.hungman;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -16,7 +13,19 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.sql.Savepoint;
+import org.xml.sax.XMLReader;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import nl.mprog.hungman.model.EvilGameplay;
+import nl.mprog.hungman.model.Gameplay;
+import nl.mprog.hungman.model.GoodGameplay;
+import nl.mprog.hungman.model.XmlStringArrayParser;
 
 
 /**
@@ -29,8 +38,9 @@ import java.sql.Savepoint;
 
 
 public class GameActivity extends HungmanActivity{
-
+    
     private Gameplay gameInstance;
+    private ArrayList<String> wordList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,10 +74,19 @@ public class GameActivity extends HungmanActivity{
     public void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
+
         if(savedInstanceState != null && !savedInstanceState.isEmpty()) {
-            gameInstance = savedInstanceState.getParcelable("gameState");
+            gameInstance = savedInstanceState.getParcelable(GAMESTATE);
+            wordList = savedInstanceState.getStringArrayList(WORDLIST);
         }
         else {
+            try {
+                wordList = XmlStringArrayParser.parse(getAssets().open(Gameplay.WORDLISTFILE),
+                        settings.getInt("wordMaxLength", 7));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             initGameplay();
             gameInstance.fetchWord();
         }
@@ -116,9 +135,9 @@ public class GameActivity extends HungmanActivity{
         boolean evil = settings.getBoolean("evil", true);
 
         if (!evil) {
-            gameInstance = new GoodGameplay(this);
+            gameInstance = new GoodGameplay(getBaseContext(), wordList);
         } else {
-            gameInstance = new EvilGameplay(this);
+            gameInstance = new EvilGameplay(getBaseContext(), wordList);
         }
 
         Log.d("gameplay instance is", gameInstance.getClass().getName());
@@ -157,10 +176,10 @@ public class GameActivity extends HungmanActivity{
 
         //Log.d("Input", letterView.getText().toString());
 
-        //if input is empty, log it silently.
+        //if input is empty, do nothing.
         //can't use .isempty because of shitty minimum SDK.
         if (letterView.getText().toString().matches("")) {
-            Log.w("guessLetterListener", "Received empty input");
+            //Log.w("guessLetterListener", "Received empty input");
             return false;
         }
         else {
@@ -197,7 +216,7 @@ public class GameActivity extends HungmanActivity{
     public void gameOverListener() {
         if(gameInstance.gameOver()) {
             Intent openWinActivity = new Intent(this, WinActivity.class);
-            openWinActivity.putExtra("gameState", gameInstance);
+            openWinActivity.putExtra(GAMESTATE, gameInstance);
             startActivity(openWinActivity);
 
         }
@@ -208,8 +227,9 @@ public class GameActivity extends HungmanActivity{
         Log.d("GameActivity", "Saving state");
         super.onSaveInstanceState(outState);
         if(!gameInstance.gameOver()) {
-            outState.putParcelable("gameState", gameInstance);
+            outState.putParcelable(GAMESTATE, gameInstance);
         }
+        outState.putStringArrayList(WORDLIST, wordList);
     }
 
 

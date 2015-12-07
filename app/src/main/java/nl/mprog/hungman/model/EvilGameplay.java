@@ -1,4 +1,4 @@
-package nl.mprog.hungman;
+package nl.mprog.hungman.model;
 
 import android.content.Context;
 import android.os.Parcel;
@@ -20,6 +20,13 @@ public class EvilGameplay extends Gameplay {
      */
     public EvilGameplay(Context context){
         super(context);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public EvilGameplay(Context context, ArrayList<String> wordList){
+        super(context,wordList);
     }
 
     /**
@@ -120,11 +127,12 @@ public class EvilGameplay extends Gameplay {
         //update wordlist
         this.wordList = newWordList;
         Log.d(" new wordlist", wordList.toString());
+        Log.d("New Wordlist length", String.valueOf(wordList.size()));
 
         //If the previous secretword is not in the new wordlist, get a new secret word.
         if(!wordList.contains(this.word)){
             this.word = fetchWord();
-            Log.d("secret word", this.word);
+            //Log.d("secret word", this.word);
         }
 
         //Update the blindword.

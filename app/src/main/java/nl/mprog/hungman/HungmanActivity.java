@@ -41,6 +41,9 @@ public class HungmanActivity extends AppCompatActivity {
         ADDSPACING,
     }
 
+    public static final String WORDLIST = "wordList";
+    public static final String GAMESTATE = "gameState";
+
     protected SharedPreferences settings;
 
     @Override

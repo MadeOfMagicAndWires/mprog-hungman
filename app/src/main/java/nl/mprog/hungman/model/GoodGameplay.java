@@ -1,8 +1,10 @@
-package nl.mprog.hungman;
+package nl.mprog.hungman.model;
 
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import java.util.ArrayList;
 
 /**
  * Subclass of Gameplay implementing playing the good (standard) version of Hangman.
@@ -20,6 +22,18 @@ public class GoodGameplay extends Gameplay{
         super(context);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public GoodGameplay(Context context, ArrayList<String> wordList){
+        super(context,wordList);
+    }
+
+
+    /**
+     * Constructor used by Parcelable
+     * @param in parcel containing data.
+     */
     public GoodGameplay(Parcel in) {
         super(in);
     }

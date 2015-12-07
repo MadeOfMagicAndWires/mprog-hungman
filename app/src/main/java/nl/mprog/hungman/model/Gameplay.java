@@ -1,4 +1,4 @@
-package nl.mprog.hungman;
+package nl.mprog.hungman.model;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -36,6 +36,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import nl.mprog.hungman.handler.XmlStringArrayHandler;
+
 /**
  *
  * Gameplay superclass.
@@ -70,6 +72,7 @@ public abstract class Gameplay implements Parcelable{
     /**
      * Constructor class.
      * Gets the secret word, highscores, and guessedSoFar
+     * @param context base context
      */
     public Gameplay(Context context) {
         //attributes we can init directly
@@ -79,10 +82,9 @@ public abstract class Gameplay implements Parcelable{
         this.wordList = new ArrayList<>();
         this.guessedSoFar = new StringBuilder();
 
-        //init methods
+        //method initialization
         readSettings();
-
-        //get word
+        //set secret word
         this.word = fetchWord();
         Log.d("secret word", this.word);
         Log.d("Blindword", correctSoFar.toString());
@@ -91,15 +93,25 @@ public abstract class Gameplay implements Parcelable{
     }
 
     /**
-     * Constructor which sets the secret word to a specific word
-     * @param word String to use as the word to be guessed
+     * Constructor which gets the wordList from a parameter and does not need to read the XML file.
+     * @param context base Activity context
+     * @param wordList ArrayList<String> to use as list of possible words.
      */
-    public Gameplay(Context context, String word) {
+    public Gameplay(Context context, ArrayList<String> wordList){
+        //attributes we can set directly.
         this.context = context;
         this.turns = 1;
         this.score = 100;
-        this.word = word;
-        Log.d("Secret word", this.word);
+        this.wordList = wordList;
+        this.guessedSoFar = new StringBuilder();
+
+        //method initialization
+        readSettings();
+        //set secret word
+        this.word = fetchWord();
+        calculateLongestWord();
+        Log.d("secret word", this.word);
+        Log.d("Blindword", correctSoFar.toString());
 
     }
 
@@ -126,7 +138,7 @@ public abstract class Gameplay implements Parcelable{
 
         String secretword;
 
-        //Log.d("fetchword", String.valueOf(wordList.size()));
+        Log.d("Wordlist size", String.valueOf(wordList.size()));
         if (wordList.size() == 1) {
             //Log.d("fetchword", "Only one word in list");
             secretword =  wordList.get(0);
@@ -165,49 +177,12 @@ public abstract class Gameplay implements Parcelable{
             final StringBuilder builder = new StringBuilder();
 
             //initiate the parser, with custom handler WordListHandler
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser parser = factory.newSAXParser();
-            XMLReader saxReader = parser.getXMLReader();
+            XMLReader saxReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
 
             //Initiate the XMLReader Handler
-            DefaultHandler wordListHandler = new DefaultHandler(){
-                boolean parsing = false;
+            XmlStringArrayHandler wordListHandler =
+                    new XmlStringArrayHandler(wordMaxLength);
 
-                @Override
-                public void startElement(String uri, String localName, String qName,
-                                         Attributes attributes) throws SAXException {
-                    if (localName.equals("item")) {
-                        parsing = true;
-                    }
-                }
-
-                @Override
-                public void characters(char[] chars, int i, int i1) throws SAXException {
-                    if (parsing) {
-                        builder.append(new String(chars, i, i1));
-                    }
-                }
-
-                @Override
-                public void endElement(String uri, String localName, String qName)
-                        throws SAXException {
-                    if (localName.equals("item")) {
-
-                        if(builder.length() > longestWord){
-                            setLongestWord(builder.length());
-                        }
-
-                        if (builder.length() <= wordMaxLength) {
-                            wordList.add(builder.toString());
-                            //Log.d("Added word", builder.toString());
-                        }
-
-                        builder.setLength(0);
-                        parsing = false;
-                    }
-                }
-
-            };
 
             //set handler and parse document
             saxReader.setContentHandler(wordListHandler);
@@ -216,32 +191,47 @@ public abstract class Gameplay implements Parcelable{
             timers.addSplit("parsing xml");
             timers.dumpToLog();
 
+            wordList = wordListHandler.getStringArray();
+            longestWord = wordListHandler.getLongestWord();
+
+
+
             //Check length
             Log.d("SAX list length", String.valueOf(wordList.size()));
             Log.d("SAX longest word", String.valueOf(longestWord));
 
         }
-        catch (SAXException e) {
-            e.printStackTrace();
-        }
-        catch (IOException e) {
-            //catch IOException
-            e.printStackTrace();
-        } catch (ParserConfigurationException e) {
-            //catch ParserConfigurationException
+        catch (SAXException | IOException | ParserConfigurationException e) {
             e.printStackTrace();
         }
 
     }
 
     /**
-     * Sets the number for the longest word counter.
+     * Calculates the length of the longest word in wordList.
+     * Used when Xml file is not read in class.
+     */
+    public void calculateLongestWord(){
+
+        for(String word: wordList){
+            if(word.length() > longestWord){
+                setLongestWord(word.length());
+            }
+        }
+    }
+
+    /**
+     * Sets the length of the longest word in wordList
      * @param counter longest word so far
      */
     public void setLongestWord(int counter) {
         this.longestWord = counter;
     }
 
+    /**
+     * Returns the length of the longest word in wordList
+     */
+    public int getLongestWord(){return longestWord;}
 
     /**
      * @deprecated since 30-11-15, SAX is supposedly quicker,
@@ -308,12 +298,9 @@ public abstract class Gameplay implements Parcelable{
             //    Log.d("Word "+i, wordList.get(i));
             //}
 
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (XmlPullParserException | IOException e) {
             e.printStackTrace();
         }
-
     }
 
     /**
@@ -536,8 +523,6 @@ public abstract class Gameplay implements Parcelable{
         dest.writeInt(score);
 
         dest.writeString(getGuessedSoFar());
-        String blindword = this.correctSoFar.toString();
-        Log.d("parcelwrite", this.correctSoFar.toString());
         dest.writeString(getBlindWord());
         dest.writeByte((byte) (this.gameWon ? 0x01 : 0x00));
     }
