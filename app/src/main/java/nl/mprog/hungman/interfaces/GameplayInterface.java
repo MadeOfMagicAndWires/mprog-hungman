@@ -1,4 +1,4 @@
-package nl.mprog.hungman.model;
+package nl.mprog.hungman.interfaces;
 
 import android.content.Context;
 import android.util.Pair;
@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import nl.mprog.hungman.GameActivity;
 
 /**
- * @deprecated since 29-11-15, rendered unnecessary.
+ * @deprecated since 29-11-15,
+ *             rendered unnecessary. Left in for prosperity.
  * @see GameActivity#initGameplay()
  *
  * Gameplay interface used by NeutralGameplay
@@ -36,11 +37,6 @@ public interface GameplayInterface {
      * Reads the wordlist from the Resource R.values.wordlist
      */
     void readWordList(String assetname);
-
-    /**
-     * Fetches the highscores from different playsessions
-     */
-    ArrayList<Integer> readHighscores();
 
 
     /**
@@ -78,14 +74,5 @@ public interface GameplayInterface {
      */
     void changeScore(int amount);
 
-    /**
-     * Checks if the current score is  a new highscore
-     */
-    boolean checkHighscores(int newscore);
 
-    /**
-     * Writes high score back to file.
-     * @return true if sucessful
-     */
-    boolean writeHighscores();
 }

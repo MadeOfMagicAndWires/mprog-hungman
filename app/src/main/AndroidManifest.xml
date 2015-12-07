@@ -27,7 +27,7 @@
             android:label="@string/title_activity_win"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".HighScoreActivity"
+            android:name=".HistoryViewActivity"
             android:label="@string/title_activity_high_score"
             android:theme="@style/AppTheme.NoActionBar"/>
     </application>

@@ -21,11 +21,11 @@ Basically, you're being scammed, I hope you didn't bet any money on this.
 ###Gameplay
 <br/>
 
-![](pics/gameplay.png)
+![](pics/readme/gameplay.png)
 
 ###Settings
-![](pics/settings.png)
+![](pics/readme/settings.png)
 
 ####Win Activities
-![](pics/wincondition.png)
-![](pics/highscores.png)
+![](pics/readme/wincondition.png)
+![](pics/readme/highscores.png)

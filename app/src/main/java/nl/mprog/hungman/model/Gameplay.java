@@ -50,11 +50,6 @@ import nl.mprog.hungman.handler.XmlStringArrayHandler;
  */
 
 public abstract class Gameplay implements Parcelable{
-
-    static public final String HIGHSCOREFILE = "highscores.csv";
-    static public final String WORDLISTFILE  = "words.xml";
-    static public final String WORDSMALLFILE = "small.xml";
-
     protected Context   context;
     protected ArrayList<String> wordList;
     private int wordMaxLength;
@@ -63,7 +58,6 @@ public abstract class Gameplay implements Parcelable{
     private int         turns;
     private int         lives;
     private int         score;
-    private ArrayList<Pair> highscores;
     private StringBuilder guessedSoFar;
     private StringBuilder correctSoFar;
     public boolean gameWon;
@@ -71,7 +65,7 @@ public abstract class Gameplay implements Parcelable{
 
     /**
      * Constructor class.
-     * Gets the secret word, highscores, and guessedSoFar
+     * Gets the setting values, secret word, blindword, and guessedSoFar
      * @param context base context
      */
     public Gameplay(Context context) {
@@ -115,13 +109,50 @@ public abstract class Gameplay implements Parcelable{
 
     }
 
+    /**
+     * Constructor using Parcel as parameter
+     * @param in Parcel containing all the relevant values
+     */
+    protected Gameplay(Parcel in) {
+        context = null;
+        if (in.readByte() == 0x01) {
+            wordList = new ArrayList<String>();
+            in.readList(wordList, String.class.getClassLoader());
+        } else {
+            wordList = null;
+        }
+        wordMaxLength = in.readInt();
+        longestWord = in.readInt();
+        word = in.readString();
+        turns = in.readInt();
+        lives = in.readInt();
+        score = in.readInt();
+
+        guessedSoFar = new StringBuilder(in.readString());
+        correctSoFar = new StringBuilder(in.readString());
+        this.gameWon = in.readByte() != 0x00;
+    }
+
+    /**
+     * Parcelable can't pass Context objects, so we'll have to remember to manually
+     * reset it when parcelling Gameplay objects.
+     * @param context the new context.
+     */
+    public void updateContext(Context context){
+        this.context = context;
+    }
+
+
 
     /**
      * Reads settings from SharedPreferences file and translates them to "Gameplay" settings
      *
      */
     public void readSettings(){
+        //Fetch settings
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+
+        //Get individual values from settings.
         this.wordMaxLength = settings.getInt("wordMaxLength", 7);
         this.lives = settings.getInt("lives", 10);
         this.longestWord = settings.getInt("longestWord", 0);
@@ -133,7 +164,7 @@ public abstract class Gameplay implements Parcelable{
      */
     public String fetchWord() {
         if (this.wordList.isEmpty()) {
-            readWordList(WORDSMALLFILE);
+            readWordList(Constant.WORDSMALLFILE);
         }
 
         String secretword;
@@ -212,7 +243,7 @@ public abstract class Gameplay implements Parcelable{
      * Used when Xml file is not read in class.
      */
     public void calculateLongestWord(){
-
+        //Check each word for the longest possible length and save it to longestWord.
         for(String word: wordList){
             if(word.length() > longestWord){
                 setLongestWord(word.length());
@@ -220,18 +251,6 @@ public abstract class Gameplay implements Parcelable{
         }
     }
 
-    /**
-     * Sets the length of the longest word in wordList
-     * @param counter longest word so far
-     */
-    public void setLongestWord(int counter) {
-        this.longestWord = counter;
-    }
-
-    /**
-     * Returns the length of the longest word in wordList
-     */
-    public int getLongestWord(){return longestWord;}
 
     /**
      * @deprecated since 30-11-15, SAX is supposedly quicker,
@@ -315,16 +334,6 @@ public abstract class Gameplay implements Parcelable{
         }
     }
 
-    /**
-     * Returns the blindword (showing letters correctly guessed so far) as a String
-     */
-    public String getBlindWord() {return correctSoFar.toString();}
-
-
-    /**
-     * Fetches the highscores from different playsessions
-     */
-    static public ArrayList<Integer> readHighscores(){return null;}
 
 
     /**
@@ -358,11 +367,6 @@ public abstract class Gameplay implements Parcelable{
 
 
     }
-
-    /**
-     * returns the letters already guessed as a string.
-     */
-    public String getGuessedSoFar() {return guessedSoFar.toString();}
 
 
     /**
@@ -404,11 +408,7 @@ public abstract class Gameplay implements Parcelable{
         lives += amount;
     }
 
-    /**
-     * Return the amounts of lives left.
-     * @return lives as int.
-     */
-    public int getLives(){return lives;}
+
 
     /**
      * Checks game conditions. if game is won it'll flip this.won
@@ -428,71 +428,13 @@ public abstract class Gameplay implements Parcelable{
         else {return false;}
     }
 
-
-    /**
-     * Checks if a score is a new highscore
-     * @param newscore score to check against the current highscores
-     * @return true if score is a new highscore, false if not.
-     */
-    public boolean checkHighscores(int newscore){
-        return false;
-    }
-
-    /**
-     * Writes highscores back to file.
-     * @return true if successful
-     */
-    public boolean writeHighscores() {
-        return false;
-    }
-
     /**
      * increase the turn timer by 1.
      */
     public void increaseTurnTimer(){this.turns++;}
 
-    /**
-     * Return the amount of turns played so far.
-     */
-    public int getTurns(){return this.turns;}
 
-
-    /* Parcelable parts below */
-
-    /**
-     * Parcelable can't pass Context objects, so we'll have to remember to manually
-     * update in each new Activity.
-     * @param context the new context.
-     */
-    public void updateContext(Context context){
-        this.context = context;
-    }
-
-
-    /**
-     * Constructor using Parcel as parameter
-     * @param in Parcel containing all the relevant values
-     */
-    protected Gameplay(Parcel in) {
-        context = null;
-        if (in.readByte() == 0x01) {
-            wordList = new ArrayList<String>();
-            in.readList(wordList, String.class.getClassLoader());
-        } else {
-            wordList = null;
-        }
-        wordMaxLength = in.readInt();
-        longestWord = in.readInt();
-        word = in.readString();
-        turns = in.readInt();
-        lives = in.readInt();
-        score = in.readInt();
-
-        guessedSoFar = new StringBuilder(in.readString());
-        correctSoFar = new StringBuilder(in.readString());
-        this.gameWon = in.readByte() != 0x00;
-    }
-
+    /* Parcelable methods */
     /**
      * Needed to implement Parcelable
      * @return 0
@@ -525,6 +467,46 @@ public abstract class Gameplay implements Parcelable{
         dest.writeString(getGuessedSoFar());
         dest.writeString(getBlindWord());
         dest.writeByte((byte) (this.gameWon ? 0x01 : 0x00));
+    }
+
+    /* getters */
+
+    /**
+     * Return the amounts of lives left.
+     * @return lives as int.
+     */
+    public int getLives(){return lives;}
+
+    /**
+     * returns the letters already guessed as a string.
+     */
+    public String getGuessedSoFar() {return guessedSoFar.toString();}
+
+    /**
+     * Returns the blindword (showing letters correctly guessed so far) as a String
+     */
+    public String getBlindWord() {return correctSoFar.toString();}
+
+
+    /**
+     * Returns the length of the longest word in wordList
+     */
+    public int getLongestWord(){return longestWord;}
+
+    /**
+     * Return the amount of turns played so far.
+     */
+    public int getTurns(){return this.turns;}
+
+
+    /* setters */
+
+    /**
+     * Sets the length of the longest word in wordList
+     * @param counter longest word so far
+     */
+    public void setLongestWord(int counter) {
+        this.longestWord = counter;
     }
 
 

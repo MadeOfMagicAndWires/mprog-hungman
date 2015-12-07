@@ -4,13 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import java.util.ArrayList;
-
 import nl.mprog.hungman.GameActivity;
+import nl.mprog.hungman.interfaces.GameplayInterface;
 
 /**
  * @deprecated since 29-11-15.
- *             Proved Completely unecessary, as Java apparently doesn't recast subclasses.
+ *             Proved Completely unnecessary, left in for prosperity.
  * @see GameActivity#initGameplay()
  *
  * NeutralGamplay is used as a bridge between GameActivity and Gameplay classes
@@ -72,13 +71,6 @@ public class NeutralGameplay implements GameplayInterface {
 
     }
 
-
-    /**
-     * Fetches the highscores from different playsessions
-     */
-    public ArrayList<Integer> readHighscores(){
-        return Gameplay.readHighscores();
-    }
 
 
     /**
@@ -150,22 +142,6 @@ public class NeutralGameplay implements GameplayInterface {
             evilGameInstance.changeScore(amount);
         }
 
-    }
-
-    /**
-     * Checks if the current score is  a new highscore
-     */
-    public boolean checkHighscores(int newscore){
-        return good ? goodGameInstance.checkHighscores(newscore)
-                : evilGameInstance.checkHighscores(newscore);
-    }
-
-    /**
-     * Writes high score back to file.
-     * @return true if successful.
-     */
-    public boolean writeHighscores() {
-        return good ? goodGameInstance.writeHighscores() : evilGameInstance.writeHighscores();
     }
 
 }

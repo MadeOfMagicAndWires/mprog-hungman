@@ -13,24 +13,19 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import org.xml.sax.XMLReader;
-
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
+import nl.mprog.hungman.model.Constant;
 import nl.mprog.hungman.model.EvilGameplay;
 import nl.mprog.hungman.model.Gameplay;
 import nl.mprog.hungman.model.GoodGameplay;
-import nl.mprog.hungman.model.XmlStringArrayParser;
+import nl.mprog.hungman.manager.XmlStringArrayParser;
 
 
 /**
  * GameActivity class
- * Used to interact between the iser and the Gamepay instance.
+ * Used to interact between the user and the Gamepay instance.
  *
  * @author Joost Bremmer
  * @since 1.0
@@ -76,17 +71,12 @@ public class GameActivity extends HungmanActivity{
 
 
         if(savedInstanceState != null && !savedInstanceState.isEmpty()) {
-            gameInstance = savedInstanceState.getParcelable(GAMESTATE);
-            wordList = savedInstanceState.getStringArrayList(WORDLIST);
+            gameInstance = savedInstanceState.getParcelable(Constant.GAMESTATENAME);
+            gameInstance.updateContext(getBaseContext());
+            wordList = savedInstanceState.getStringArrayList(Constant.WORDLISTNAME);
         }
         else {
-            try {
-                wordList = XmlStringArrayParser.parse(getAssets().open(Gameplay.WORDLISTFILE),
-                        settings.getInt("wordMaxLength", 7));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+            readWordList();
             initGameplay();
             gameInstance.fetchWord();
         }
@@ -131,6 +121,20 @@ public class GameActivity extends HungmanActivity{
 
     }
 
+    /**
+     * Read word list using SAX xmlparser.
+     * @see XmlStringArrayParser
+     * @see nl.mprog.hungman.handler.XmlStringArrayHandler
+     */
+    public void readWordList() {
+        try {
+            wordList = XmlStringArrayParser.parse(getAssets().open(Constant.WORDLISTFILE),
+                    settings.getInt("wordMaxLength", 7));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void initGameplay() {
         boolean evil = settings.getBoolean("evil", true);
 
@@ -155,11 +159,11 @@ public class GameActivity extends HungmanActivity{
         int livesLeft = gameInstance.getLives();
         StringBuilder healthbar = new StringBuilder();
         for(int i=0;i<livesLeft;i++) {
-            healthbar.append('\u2764');
+            healthbar.append('\u2764'); //black heart
         }
 
         for(int i=0;i<(livesTotal - livesLeft);i++) {
-            healthbar.append('\u2661');
+            healthbar.append('\u2661'); //white heart
         }
 
 
@@ -216,7 +220,7 @@ public class GameActivity extends HungmanActivity{
     public void gameOverListener() {
         if(gameInstance.gameOver()) {
             Intent openWinActivity = new Intent(this, WinActivity.class);
-            openWinActivity.putExtra(GAMESTATE, gameInstance);
+            openWinActivity.putExtra(Constant.GAMESTATENAME, gameInstance);
             startActivity(openWinActivity);
 
         }
@@ -227,9 +231,9 @@ public class GameActivity extends HungmanActivity{
         Log.d("GameActivity", "Saving state");
         super.onSaveInstanceState(outState);
         if(!gameInstance.gameOver()) {
-            outState.putParcelable(GAMESTATE, gameInstance);
+            outState.putParcelable(Constant.GAMESTATENAME, gameInstance);
         }
-        outState.putStringArrayList(WORDLIST, wordList);
+        outState.putStringArrayList(Constant.WORDLISTNAME, wordList);
     }
 
 
