@@ -1,6 +1,8 @@
 package nl.mprog.hungman;
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -19,6 +21,16 @@ public class EvilGameplay extends Gameplay {
     public EvilGameplay(Context context){
         super(context);
     }
+
+    /**
+     * Constructor used by Parcelable
+     * @param in parcel containing data.
+     */
+    public EvilGameplay(Parcel in) {
+        super(in);
+    }
+
+
 
     /**
      * Plays a single turn using EvilGameplay rules, then updates the gamestate
@@ -122,5 +134,21 @@ public class EvilGameplay extends Gameplay {
         }
 
     }
+
+    /**
+     * Used by Parcelable
+     */
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Gameplay> CREATOR = new Parcelable.Creator<Gameplay>() {
+        @Override
+        public EvilGameplay createFromParcel(Parcel in) {
+            return new EvilGameplay(in);
+        }
+
+        @Override
+        public EvilGameplay[] newArray(int size) {
+            return new EvilGameplay[size];
+        }
+    };
 
 }

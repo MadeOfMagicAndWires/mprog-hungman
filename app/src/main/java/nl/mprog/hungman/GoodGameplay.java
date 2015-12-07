@@ -1,6 +1,8 @@
 package nl.mprog.hungman;
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * Subclass of Gameplay implementing playing the good (standard) version of Hangman.
@@ -8,7 +10,7 @@ import android.content.Context;
  * @author Joost Bremmer
  * @since  1.0
  */
-public class GoodGameplay extends Gameplay {
+public class GoodGameplay extends Gameplay{
 
 
     /**
@@ -17,6 +19,11 @@ public class GoodGameplay extends Gameplay {
     public GoodGameplay(Context context) {
         super(context);
     }
+
+    public GoodGameplay(Parcel in) {
+        super(in);
+    }
+
 
     /**
      * {@inheritDoc}
@@ -45,4 +52,22 @@ public class GoodGameplay extends Gameplay {
         return guessWasCorrect;
 
     }
+
+    /**
+     * Used by Parcelable
+     */
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Gameplay> CREATOR = new Parcelable.Creator<Gameplay>() {
+        @Override
+        public GoodGameplay createFromParcel(Parcel in) {
+            return new GoodGameplay(in);
+        }
+
+        @Override
+        public GoodGameplay[] newArray(int size) {
+            return new GoodGameplay[size];
+        }
+    };
+
+
 }

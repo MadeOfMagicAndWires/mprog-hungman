@@ -7,7 +7,7 @@
         <SeekBarPreference
             android:key="wordMaxLength"
             android:title="Word Length"
-            android:defaultValue="5"
+            android:defaultValue="9"
             android:summary="maximum length of word you'll have to guess"/>
 
         <SeekBarPreference

@@ -3,6 +3,8 @@ package nl.mprog.hungman;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.nfc.Tag;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Pair;
@@ -45,7 +47,7 @@ import javax.xml.parsers.SAXParserFactory;
  * @since 1.0
  */
 
-public abstract class Gameplay {
+public abstract class Gameplay implements Parcelable{
 
     static public final String HIGHSCOREFILE = "highscores.csv";
     static public final String WORDLISTFILE  = "words.xml";
@@ -62,7 +64,7 @@ public abstract class Gameplay {
     private ArrayList<Pair> highscores;
     private StringBuilder guessedSoFar;
     private StringBuilder correctSoFar;
-    protected boolean gameWon;
+    public boolean gameWon;
 
 
     /**
@@ -376,7 +378,6 @@ public abstract class Gameplay {
     public String getGuessedSoFar() {return guessedSoFar.toString();}
 
 
-
     /**
      * Checks if the Charsequence contains any instnces of a specific letter
      * @param letter character to check against, must be a-Z
@@ -428,6 +429,7 @@ public abstract class Gameplay {
      */
     public boolean gameOver(){
         if(this.lives == 0){
+            this.gameWon = false;
             return true;
         }
 
@@ -466,5 +468,79 @@ public abstract class Gameplay {
      * Return the amount of turns played so far.
      */
     public int getTurns(){return this.turns;}
+
+
+    /* Parcelable parts below */
+
+    /**
+     * Parcelable can't pass Context objects, so we'll have to remember to manually
+     * update in each new Activity.
+     * @param context the new context.
+     */
+    public void updateContext(Context context){
+        this.context = context;
+    }
+
+
+    /**
+     * Constructor using Parcel as parameter
+     * @param in Parcel containing all the relevant values
+     */
+    protected Gameplay(Parcel in) {
+        context = null;
+        if (in.readByte() == 0x01) {
+            wordList = new ArrayList<String>();
+            in.readList(wordList, String.class.getClassLoader());
+        } else {
+            wordList = null;
+        }
+        wordMaxLength = in.readInt();
+        longestWord = in.readInt();
+        word = in.readString();
+        turns = in.readInt();
+        lives = in.readInt();
+        score = in.readInt();
+
+        guessedSoFar = new StringBuilder(in.readString());
+        correctSoFar = new StringBuilder(in.readString());
+        this.gameWon = in.readByte() != 0x00;
+    }
+
+    /**
+     * Needed to implement Parcelable
+     * @return 0
+     */
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    /**
+     * Write all relevant data to a Parcel object
+     * @param dest Parcel object that stores all relevant data
+     * @param flags needed to implement parcelable, unused
+     */
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (wordList == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(wordList);
+        }
+        dest.writeInt(wordMaxLength);
+        dest.writeInt(longestWord);
+        dest.writeString(word);
+        dest.writeInt(turns);
+        dest.writeInt(lives);
+        dest.writeInt(score);
+
+        dest.writeString(getGuessedSoFar());
+        String blindword = this.correctSoFar.toString();
+        Log.d("parcelwrite", this.correctSoFar.toString());
+        dest.writeString(getBlindWord());
+        dest.writeByte((byte) (this.gameWon ? 0x01 : 0x00));
+    }
+
 
 }

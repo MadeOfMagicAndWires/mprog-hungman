@@ -12,6 +12,7 @@
     <string name="inputnotletter">Please insert alphabetic input only</string>
     <string name="guessed_so_far_header">Letters guessed:</string>
     <string name="game_won">You won!</string>
+    <string name="game_lost">You Lost!</string>
     <string name="action_newgame">New Game</string>
 
 
@@ -75,5 +76,6 @@
     <string name="title_activity_hangman">HangmanActivity</string>
     <string name="title_activity_win">WinActivity</string>
     <string name="title_activity_high_score">HighScoreActivity</string>
+    <string name="congrats">Congratulations!</string>
 
 </resources>

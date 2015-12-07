@@ -3,6 +3,8 @@ package nl.mprog.hungman;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import java.sql.Savepoint;
 
 
 /**
@@ -60,8 +64,15 @@ public class GameActivity extends HungmanActivity{
     public void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        initGameplay();
-        gameInstance.fetchWord();
+        if(savedInstanceState != null && !savedInstanceState.isEmpty()) {
+            gameInstance = savedInstanceState.getParcelable("gameState");
+        }
+        else {
+            initGameplay();
+            gameInstance.fetchWord();
+        }
+
+
         updateUi();
 
     }
@@ -185,15 +196,22 @@ public class GameActivity extends HungmanActivity{
 
     public void gameOverListener() {
         if(gameInstance.gameOver()) {
-            if(gameInstance.gameWon) {
-                Log.v("Congratulations", getString(R.string.game_won));
-            }
-            else {
-                Log.v("Congratulations", "You lost!");
-            }
+            Intent openWinActivity = new Intent(this, WinActivity.class);
+            openWinActivity.putExtra("gameState", gameInstance);
+            startActivity(openWinActivity);
 
         }
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.d("GameActivity", "Saving state");
+        super.onSaveInstanceState(outState);
+        if(!gameInstance.gameOver()) {
+            outState.putParcelable("gameState", gameInstance);
+        }
+    }
+
 
 
 }
