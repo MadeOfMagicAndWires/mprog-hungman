@@ -15,9 +15,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import nl.mprog.hungman.model.Constant;
 
 /**
  * Hungman Activity superclass
@@ -29,12 +27,7 @@ import java.util.List;
  *
  */
 public class HungmanActivity extends AppCompatActivity {
-    static public final List<Pair> DEFAULTCFG = Collections.unmodifiableList(
-            new ArrayList<Pair>() {{
-                add(Pair.create("wordMaxLength", 7));
-                add(Pair.create("lives", 10));
-                add(Pair.create("evil", true));
-            }});
+
 
     public enum EditMode {
         NONE,
@@ -57,13 +50,13 @@ public class HungmanActivity extends AppCompatActivity {
 
         //Check of settings leeg is (heeft geen setting die er sowieso in moet zitten)
         //Zo niet, voeg dan alle standaard settings in DEFAULTCFG toe.
-        String firstsetting = (String) DEFAULTCFG.get(0).first;
+        String firstsetting = (String) Constant.DEFAULTCFG.get(0).first;
         if(!settings.contains(firstsetting)) {
             //maak editor aan
             SharedPreferences.Editor settingsEditor = settings.edit();
             //Ga alle default settings in DEFAULTCFG af, en voeg ze toe.
-            for (int i = 0; i < DEFAULTCFG.size(); i++) {
-                Pair setting = DEFAULTCFG.get(i);
+            for (int i = 0; i < Constant.DEFAULTCFG.size(); i++) {
+                Pair setting = Constant.DEFAULTCFG.get(i);
                 switch (setting.second.getClass().getSimpleName()) {
                     case "Integer":
                         settingsEditor.putInt((String) setting.first, (Integer) setting.second);
