@@ -166,8 +166,9 @@ public class GameActivity extends HungmanActivity{
             healthbar.append('\u2661'); //white heart
         }
 
-
         updateTextView(R.id.healthbar, healthbar.toString(), EditMode.NONE);
+
+        gameOverListener();
 
     }
 
@@ -213,7 +214,6 @@ public class GameActivity extends HungmanActivity{
 
 
         letterView.getText().clear();
-        gameOverListener();
         return correct;
     }
 
@@ -224,16 +224,18 @@ public class GameActivity extends HungmanActivity{
             startActivity(openWinActivity);
 
         }
+        else {
+            //do nothing
+        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        Log.d("GameActivity", "Saving state");
         super.onSaveInstanceState(outState);
         if(!gameInstance.gameOver()) {
             outState.putParcelable(Constant.GAMESTATENAME, gameInstance);
         }
-        outState.putStringArrayList(Constant.WORDLISTNAME, wordList);
+        //outState.putStringArrayList(Constant.WORDLISTNAME, wordList);
     }
 
 

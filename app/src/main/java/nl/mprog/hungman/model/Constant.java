@@ -24,7 +24,7 @@ public class Constant {
     static public final List<Pair> DEFAULTCFG = Collections.unmodifiableList(
             new ArrayList<Pair>() {{
                 add(Pair.create("wordMaxLength", 7));
-                add(Pair.create("lives", 10));
+                add(Pair.create("lives", 15));
                 add(Pair.create("evil", true));
             }});
 

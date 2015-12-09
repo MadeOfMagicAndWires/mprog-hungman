@@ -84,4 +84,17 @@ public class GoodGameplay extends Gameplay{
     };
 
 
+    /**
+     * Overwrite writeToParcel method to not send wordList.
+     * Since the wordList is never wittled down in GoodGameplay,
+     * it becomes too big to put in a bundle and send on to WinActivity.
+     *
+     * @see Gameplay#writeToParcel(Parcel, int)
+     */
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        this.wordList = null;
+        super.writeToParcel(dest, flags);
+    }
+
 }

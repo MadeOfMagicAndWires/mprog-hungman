@@ -498,6 +498,8 @@ public abstract class Gameplay implements Parcelable{
      */
     public int getTurns(){return this.turns;}
 
+    public ArrayList<String> getWordList(){return wordList;}
+
 
     /* setters */
 
